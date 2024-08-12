@@ -1,60 +1,100 @@
-/* COMPUTER VISION TASK */
+/* NATURAL LANGUAGE PROCESSING (NLP) */
 
-import tensorflow as tf
-from tensorflow.keras import datasets, layers, models
-import matplotlib.pyplot as plt
-from sklearn.metrics import classification_report
-import numpy as np
+import subprocess
+import sys
+import pandas as pd
+import nltk
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+import tkinter as tk
+from tkinter import ttk
 
-# Load the CIFAR-10 dataset
-(train_images, train_labels), (test_images, test_labels) = datasets.cifar10.load_data()
+def install(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
-# Normalize pixel values to be between 0 and 1
-train_images, test_images = train_images / 255.0, test_images / 255.0
+try:
+    import pandas as pd
+except ImportError:
+    install('pandas')
+    import pandas as pd
 
-# Class names in CIFAR-10 dataset
-class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer', 
-               'dog', 'frog', 'horse', 'ship', 'truck']
+try:
+    import nltk
+except ImportError:
+    install('nltk')
+    import nltk
 
-model = models.Sequential([
-    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)),
-    layers.MaxPooling2D((2, 2)),
-    layers.Conv2D(64, (3, 3), activation='relu'),
-    layers.MaxPooling2D((2, 2)),
-    layers.Conv2D(64, (3, 3), activation='relu'),
-    layers.Flatten(),
-    layers.Dense(64, activation='relu'),
-    layers.Dense(10)
+try:
+    from sklearn.feature_extraction.text import CountVectorizer
+    from sklearn.naive_bayes import MultinomialNB
+    from sklearn.pipeline import Pipeline
+    from sklearn.model_selection import train_test_split
+    from sklearn.metrics import accuracy_score, classification_report
+except ImportError:
+    install('scikit-learn')
+    from sklearn.feature_extraction.text import CountVectorizer
+    from sklearn.naive_bayes import MultinomialNB
+    from sklearn.pipeline import Pipeline
+    from sklearn.model_selection import train_test_split
+    from sklearn.metrics import accuracy_score, classification_report
+
+# Read the local dataset
+df = pd.read_csv(r'C:\Users\SMILE\task1\IMDB Dataset.csv')
+
+# Assuming the CSV has columns 'review' and 'sentiment'
+reviews = df['review'].values
+sentiments = df['sentiment'].values
+
+# Calculate counts of positive and negative reviews
+positive_count = sum(sentiment == 'positive' for sentiment in sentiments)
+negative_count = sum(sentiment == 'negative' for sentiment in sentiments)
+
+# Split dataset
+X_train, X_test, y_train, y_test = train_test_split(reviews, sentiments, test_size=0.2, random_state=42)
+
+# Create and train the model
+text_clf = Pipeline([
+    ('vect', CountVectorizer()),
+    ('clf', MultinomialNB()),
 ])
 
-model.compile(optimizer='adam',
-              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-              metrics=['accuracy'])
+text_clf.fit(X_train, y_train)
 
-history = model.fit(train_images, train_labels, epochs=10, 
-                    validation_data=(test_images, test_labels))
+# Evaluate the model
+predictions = text_clf.predict(X_test)
+accuracy = accuracy_score(y_test, predictions)
+report = classification_report(y_test, predictions)
 
-test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
-print(f"\nTest accuracy: {test_acc}")
+def show_results_in_new_window():
+    result_text = (
+        f'Number of Positive Reviews: {positive_count}\n'
+        f'Number of Negative Reviews: {negative_count}\n\n'
+        f'Accuracy: {accuracy:.2f}\n\n'
+        f'Classification Report:\n{report}'
+    )
+    result_window = tk.Toplevel(root)
+    result_window.title("NLP Sentiment Analysis Results")
+    result_window.geometry("800x600")
+    
+    # Create a Text widget for the results with proper configuration
+    result_text_widget = tk.Text(result_window, wrap='word', font=("Courier New", 20), bg='#f0f8ff', padx=10, pady=10)
+    result_text_widget.pack(fill='both', expand=True)
 
-plt.plot(history.history['accuracy'], label='accuracy')
-plt.plot(history.history['val_accuracy'], label = 'val_accuracy')
-plt.xlabel('Epoch')
-plt.ylabel('Accuracy')
-plt.ylim([0, 1])
-plt.legend(loc='lower right')
-plt.show()
+    # Insert formatted results and configure the widget
+    result_text_widget.insert(tk.END, result_text)
+    result_text_widget.config(state=tk.DISABLED)  # Make the text widget read-only
 
-# Predict labels for the test dataset
-predictions = model.predict(test_images)
+# Create the main GUI application
+root = tk.Tk()
+root.title("NLP Sentiment Analysis")
+root.geometry("400x300")
 
-# Convert logits to class labels
-predicted_labels = np.argmax(predictions, axis=1)
+# Button to trigger the result display in a new window
+show_button = ttk.Button(root, text="Show Results", command=show_results_in_new_window)
+show_button.pack(pady=20)
 
-# Flatten the test_labels array for comparison
-true_labels = test_labels.flatten()
-
-# Print classification report
-print(classification_report(true_labels, predicted_labels, target_names=class_names))
-
-print("Predicted label for the 3rd test image:", class_names[predicted_labels[2]])
+# Run the application
+root.mainloop()
