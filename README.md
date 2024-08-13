@@ -35,6 +35,12 @@ This project is a sentiment analysis tool that uses Natural Language Processing 
 - **Model Evaluation:** The model is evaluated on the test set, and metrics such as accuracy and a detailed classification report are generated.
 - **GUI Display:** The results, including the number of positive and negative reviews, overall accuracy, and the classification report, are displayed in a new window via the Tkinter GUI.
 
+
+### PATH OF DATASET: 
+https://drive.google.com/file/d/1CSlYKv435TXr5SpYVEnrPMYXJ-PtFTQx/view?usp=sharing
+
+
+
 ### Result:
 
 ![Screenshot 2024-08-13 183441](https://github.com/user-attachments/assets/4032c0fb-8036-4de5-a836-9b7024cb529a)
