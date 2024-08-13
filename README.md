@@ -11,7 +11,7 @@
 
 ## Overview of the Project:
 
-### project : NLP Sentiment Analysis with Naive Bayes and Tkinter GUI
+### Project : NLP Sentiment Analysis with Naive Bayes and Tkinter GUI
 
 This project is a sentiment analysis tool that uses Natural Language Processing (NLP) techniques to classify movie reviews as positive or negative. The project is built using Python and leverages the Naive Bayes algorithm for text classification. Additionally, it features a graphical user interface (GUI) built with Tkinter to display the results of the sentiment analysis in an interactive way.
 
@@ -36,3 +36,14 @@ This project is a sentiment analysis tool that uses Natural Language Processing 
 - **GUI Display:** The results, including the number of positive and negative reviews, overall accuracy, and the classification report, are displayed in a new window via the Tkinter GUI.
 
 ### Result:
+
+![Screenshot 2024-08-13 183441](https://github.com/user-attachments/assets/4032c0fb-8036-4de5-a836-9b7024cb529a)
+
+### CLICK ON SHOW RESULT
+
+### Output:
+
+![Screenshot 2024-08-13 183420](https://github.com/user-attachments/assets/e0a70bd4-a579-46a9-a160-6b8b00dfe1a1)
+
+
+
